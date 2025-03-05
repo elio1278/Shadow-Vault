@@ -39,7 +39,7 @@ The challenge focuses on aspects of **authentication**, **token manipulation**, 
 1. **Setup**:
    - Clone the repository:
      ```bash
-     git clone https://github.com/elio1278/ShadowVault---Web-Exploitation-CTF-Challenge.git
+     git clone https://github.com/elio1278/Shadow-Vault.git
      cd ShadowVault---Web-Exploitation-CTF-Challenge
      ```
 
