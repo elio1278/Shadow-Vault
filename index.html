@@ -1,0 +1,128 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ShadowVault CTF</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e2f;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #222;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ff6347;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #28a745;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        input:focus, button:focus {
+            outline: none;
+            border-color: #ff6347;
+        }
+
+        p {
+            color: #f8d7da;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .footer a {
+            color: #ff6347;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login to ShadowVault</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p id="message"></p>
+        <div class="footer">
+            <p>For help, contact <a href="mailto:support@shadowvault.com">support@shadowvault.com</a></p>
+        </div>
+    </div>
+
+    <script>
+        const encoded1 = 'dXNlcjE='; 
+        const encoded2 = 'cGFzc3dvcmQxMjM='; 
+
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const decodedUsername = atob(encoded1);  
+            const decodedPassword = atob(encoded2); 
+
+            if (username === decodedUsername && password === decodedPassword) {
+                const response = await fetch("http://localhost:5000/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem("token", data.token);
+                    window.location.href = "dashboard.html";
+                } else {
+                    document.getElementById("message").innerText = "Login failed: " + data.message;
+                }
+            } else {
+                document.getElementById("message").innerText = "Invalid credentials";
+            }
+        }
+    </script>
+</body>
+</html>

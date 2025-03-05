@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e2f;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #222;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ff6347;
+        }
+
+        h5 {
+            font-size: 16px;
+            color: #bbb;
+        }
+
+        input, button, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #28a745;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        input:focus, textarea:focus, button:focus {
+            outline: none;
+            border-color: #ff6347;
+        }
+
+        pre {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        p {
+            color: #f8d7da;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .footer a {
+            color: #ff6347;
+            text-decoration: none;
+        }
+
+        #token {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;  
+            margin-top: 10px;
+            min-height: 50px;
+            max-height: 150px;
+            overflow-y: auto; 
+            height: auto;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome to ShadowVault</h2>
+        <textarea id="tokenDisplay" rows="4" placeholder="Token will appear here" disabled></textarea>
+
+        <input type="text" id="userToken" placeholder="Enter your token here">
+
+        <h3>Upload File</h3>
+        <textarea id="fileContent" rows="3" placeholder='File content in JSON format e.g. {"filename": "", "data": ""}'></textarea>
+
+        <button onclick="uploadFile()">Upload</button>
+
+        <h3>Retrieve File</h3>
+        <input type="text" id="fileId" placeholder="Enter File ID">
+        <button onclick="getFile()">Get File</button>
+
+        <h4>Response:</h4>
+        <pre id="response"></pre>
+
+        <div class="footer">
+            <p>For help, contact <a href="mailto:support@shadowvault.com">support@shadowvault.com</a></p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("You need to log in first!");
+                window.location.href = "index.html"; 
+            } else {
+                document.getElementById("tokenDisplay").innerText = `Auth Token: ${token}`;
+                document.getElementById("token").value = token;  
+            }
+        };
+
+        async function uploadFile() {
+            const token = document.getElementById("userToken").value;  
+            const fileContent = document.getElementById("fileContent").value;
+
+            if (!token) {
+                alert("Please enter a token!");
+                return;
+            }
+
+            const response = await fetch("http://localhost:5000/files/upload", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: fileContent,
+            });
+
+            const data = await response.json();
+            document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function getFile() {
+            const token = document.getElementById("userToken").value;  
+            const fileId = document.getElementById("fileId").value;
+
+            if (!token) {
+                alert("Please enter a token!");
+                return;
+            }
+
+            const response = await fetch(`http://localhost:5000/files/${fileId}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
